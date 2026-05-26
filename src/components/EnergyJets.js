@@ -2,8 +2,10 @@ import * as THREE from 'three';
 
 export default class EnergyJets {
     constructor() {
-       
-        const topCount = 6000;
+        this.group = new THREE.Group();
+        
+        // Top jet particles
+        const topCount = 4000;
         const topGeometry = new THREE.BufferGeometry();
         const topPositions = new Float32Array(topCount * 3);
         const topColors = new Float32Array(topCount * 3);
@@ -22,7 +24,6 @@ export default class EnergyJets {
             topPositions[i*3+1] = y;
             topPositions[i*3+2] = z;
             
-            // Color gradient: white at base, blue at tip
             const t = height / 5;
             topColors[i*3] = 1.0;
             topColors[i*3+1] = 0.9 - t * 0.4;
@@ -33,15 +34,16 @@ export default class EnergyJets {
         topGeometry.setAttribute('color', new THREE.BufferAttribute(topColors, 3));
         
         const jetMaterial = new THREE.PointsMaterial({
-            size: 0.022,
+            size: 0.02,
             vertexColors: true,
             transparent: true,
             blending: THREE.AdditiveBlending
         });
         
         this.topJet = new THREE.Points(topGeometry, jetMaterial);
+        this.group.add(this.topJet);
         
-       
+        // Bottom jet particles
         const bottomGeometry = new THREE.BufferGeometry();
         const bottomPositions = new Float32Array(topCount * 3);
         for (let i = 0; i < topCount; i++) {
@@ -62,74 +64,16 @@ export default class EnergyJets {
         bottomGeometry.setAttribute('color', new THREE.BufferAttribute(topColors, 3));
         
         this.bottomJet = new THREE.Points(bottomGeometry, jetMaterial);
-        
-     
-        const plasmaCount = 4000;
-        const plasmaGeometry = new THREE.BufferGeometry();
-        const plasmaPositions = new Float32Array(plasmaCount * 3);
-        this.plasmaVelocities = [];
-        
-        for (let i = 0; i < plasmaCount; i++) {
-            const isTop = Math.random() > 0.5;
-            const radius = Math.random() * 0.7;
-            const angle = Math.random() * Math.PI * 2;
-            const height = (isTop ? 1 : -1) * (0.5 + Math.random() * 3);
-            
-            plasmaPositions[i*3] = Math.cos(angle) * radius;
-            plasmaPositions[i*3+1] = height;
-            plasmaPositions[i*3+2] = Math.sin(angle) * radius;
-            
-            this.plasmaVelocities.push({
-                speed: 0.02 + Math.random() * 0.03,
-                isTop: isTop,
-                radius: radius,
-                angle: angle
-            });
-        }
-        
-        plasmaGeometry.setAttribute('position', new THREE.BufferAttribute(plasmaPositions, 3));
-        const plasmaMaterial = new THREE.PointsMaterial({
-            color: 0xffaa88,
-            size: 0.015,
-            transparent: true,
-            blending: THREE.AdditiveBlending
-        });
-        
-        this.plasmaParticles = new THREE.Points(plasmaGeometry, plasmaMaterial);
-        this.plasmaPositions = plasmaPositions;
+        this.group.add(this.bottomJet);
     }
     
     update(time) {
-      
-        this.topJet.rotation.y += 0.003;
-        this.bottomJet.rotation.y += 0.003;
-        
-       
-        for (let i = 0; i < this.plasmaVelocities.length; i++) {
-            const v = this.plasmaVelocities[i];
-            let y = this.plasmaPositions[i*3+1];
-            
-            if (v.isTop) {
-                y += v.speed;
-                if (y > 4.5) y = 0.6;
-            } else {
-                y -= v.speed;
-                if (y < -4.5) y = -0.6;
-            }
-            
-            this.plasmaPositions[i*3+1] = y;
-            
-          
-            const t = Math.abs(y) / 4.5;
-            const radius = v.radius * (1 - t * 0.5);
-            this.plasmaPositions[i*3] = Math.cos(v.angle + time) * radius;
-            this.plasmaPositions[i*3+2] = Math.sin(v.angle + time) * radius;
-        }
-        
-        this.plasmaParticles.geometry.attributes.position.needsUpdate = true;
-        
+        this.group.rotation.y += 0.003;
         
         const pulse = 0.7 + Math.sin(time * 6) * 0.2;
-        this.plasmaParticles.material.opacity = pulse;
+        if (this.topJet.material) {
+            this.topJet.material.opacity = pulse;
+            this.bottomJet.material.opacity = pulse;
+        }
     }
 }
