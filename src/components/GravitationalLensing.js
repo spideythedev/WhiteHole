@@ -2,13 +2,13 @@ import * as THREE from 'three';
 
 export default class GravitationalLensing {
     constructor() {
-        // Einstein ring effect
-        const ringCount = 3;
+        this.group = new THREE.Group();
         this.rings = [];
         
-        for (let i = 0; i < ringCount; i++) {
+        // Einstein ring effect
+        for (let i = 0; i < 3; i++) {
             const radius = 1.9 + i * 0.35;
-            const geometry = new THREE.TorusGeometry(radius, 0.02, 128, 360);
+            const geometry = new THREE.TorusGeometry(radius, 0.02, 64, 200);
             const material = new THREE.MeshBasicMaterial({
                 color: 0xffaa77,
                 transparent: true,
@@ -19,13 +19,11 @@ export default class GravitationalLensing {
             const ring = new THREE.Mesh(geometry, material);
             ring.rotation.x = Math.PI / 2;
             this.rings.push(ring);
+            this.group.add(ring);
         }
         
-        this.lensRing = new THREE.Group();
-        this.rings.forEach(ring => this.lensRing.add(ring));
-        
-        // Distortion field particles (representing spacetime curvature)
-        const distortionCount = 6000;
+        // Distortion field particles
+        const distortionCount = 4000;
         const distortionGeometry = new THREE.BufferGeometry();
         const distortionPositions = new Float32Array(distortionCount * 3);
         
@@ -49,17 +47,17 @@ export default class GravitationalLensing {
         });
         
         this.distortionField = new THREE.Points(distortionGeometry, distortionMaterial);
+        this.group.add(this.distortionField);
     }
     
     update(time) {
-        // Rotate lensing rings at different speeds
         this.rings.forEach((ring, idx) => {
             ring.rotation.z += 0.002 * (idx + 1);
-            ring.material.opacity = 0.2 + Math.sin(time * 1.5 + idx) * 0.08;
+            if (ring.material) {
+                ring.material.opacity = 0.2 + Math.sin(time * 1.5 + idx) * 0.08;
+            }
         });
         
-        // Distortion field rotation
-        this.distortionField.rotation.y += 0.001;
-        this.distortionField.rotation.x = Math.sin(time * 0.3) * 0.1;
+        this.group.rotation.y += 0.001;
     }
 }
