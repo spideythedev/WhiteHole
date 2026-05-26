@@ -1,0 +1,73 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: black;
+}
+
+#info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px 25px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border-left: 4px solid #ffdd88;
+    pointer-events: none;
+    z-index: 100;
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+#info h1 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #ffdd88;
+    text-shadow: 0 0 10px rgba(255, 221, 136, 0.5);
+}
+
+#info p {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.controls-info {
+    font-size: 0.6rem;
+    margin-top: 8px;
+    opacity: 0.6;
+}
+
+#stats {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    font-family: monospace;
+    font-size: 0.7rem;
+    pointer-events: none;
+    z-index: 100;
+    text-align: right;
+    border-right: 2px solid #ffdd88;
+}
+
+#energyLevel {
+    color: #ffaa44;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 170, 68, 0.5);
+}
+
+@media (max-width: 768px) {
+    #info { font-size: 0.8rem; padding: 8px 15px; }
+    #stats { font-size: 0.6rem; padding: 6px 10px; }
+}
